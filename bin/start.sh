@@ -2,6 +2,23 @@
 
 set -xe
 
+if ! [ -z "${AUTH_FQDN}" ]; then
+  sed -i "s;'entityID' => .*;'entityID' => 'https://${AUTH_FQDN}/shibboleth-sp',;" \
+      /var/www/simplesamlphp/config/authsources.php
+  sed -i "s,var wayf_sp_handlerURL = .*,var wayf_sp_handlerURL = \"https://${AUTH_FQDN}/simplesaml/module.php/saml/sp/discoresp.php\";," \
+      /var/www/simplesamlphp/templates/selectidp-dropdown.php
+fi
+if ! [ -z "${CG_FQDN}" ]; then
+  sed -i "s;'entityId' => .*;'entityId' => 'https://${CG_FQDN}/idp/shibboleth',;" \
+      /var/www/simplesamlphp/config/config.php
+fi
+if ! [ -z "${DS_FQDN}" ]; then
+  sed -i "s,var embedded_wayf_URL = .*,var embedded_wayf_URL = \"https://${DS_FQDN}/WAYF/embedded-wayf.js\";," \
+      /var/www/simplesamlphp/templates/selectidp-dropdown.php
+  sed -i "s,var wayf_URL = .*,var wayf_URL = \"https://${DS_FQDN}/WAYF\";," \
+      /var/www/simplesamlphp/templates/selectidp-dropdown.php
+fi
+
 # Setup the keys for nginx
 cp -p $CERT_DIR/idp-proxy.chained.cer /etc/pki/nginx/
 cp -p $CERT_DIR/idp-proxy.key /etc/pki/nginx/private/

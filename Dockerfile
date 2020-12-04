@@ -75,19 +75,9 @@ RUN chmod +x /start.sh \
              /usr/local/sbin/add_auth_proxy.sh
 
 # Setup simplesamlphp config
-ARG AUTH_FQDN="nbhub.ecloud.nii.ac.jp"
-ARG DS_FQDN="ds.gakunin.nii.ac.jp"
-ARG CG_FQDN="cg.gakunin.jp"
-RUN sed -i "s;'entityID' => .*;'entityID' => 'https://${AUTH_FQDN}/shibboleth-sp',;" \
-    /var/www/simplesamlphp/config/authsources.php
-RUN sed -i "s;'entityId' => .*;'entityId' => 'https://${CG_FQDN}/idp/shibboleth',;" \
-    /var/www/simplesamlphp/config/config.php
-RUN sed -i "s,var embedded_wayf_URL = .*,var embedded_wayf_URL = \"https://${DS_FQDN}/WAYF/embedded-wayf.js\";," \
-    /var/www/simplesamlphp/templates/selectidp-dropdown.php
-RUN sed -i "s,var wayf_URL = .*,var wayf_URL = \"https://${DS_FQDN}/WAYF\";," \
-    /var/www/simplesamlphp/templates/selectidp-dropdown.php
-RUN sed -i "s,var wayf_sp_handlerURL = .*,var wayf_sp_handlerURL = \"https://${AUTH_FQDN}/simplesaml/module.php/saml/sp/discoresp.php\";," \
-    /var/www/simplesamlphp/templates/selectidp-dropdown.php
+ENV AUTH_FQDN="nbhub.ecloud.nii.ac.jp"
+ENV DS_FQDN="ds.gakunin.nii.ac.jp"
+ENV CG_FQDN="cg.gakunin.jp"
 
 VOLUME /etc/cert
 ENV CERT_DIR=/etc/cert
