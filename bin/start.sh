@@ -19,6 +19,10 @@ if ! [ -z "${DS_FQDN}" ]; then
       /var/www/simplesamlphp/templates/selectidp-dropdown.php
 fi
 
+if ! [ -f /var/www/simplesamlphp/metadata/xml/auth-proxies.xml ]; then
+  cp /etc/simplesamlphp/resources/auth-proxies.xml /var/www/simplesamlphp/metadata/xml/
+fi
+
 # Setup the keys for nginx
 cp -p $CERT_DIR/idp-proxy.chained.cer /etc/pki/nginx/
 cp -p $CERT_DIR/idp-proxy.key /etc/pki/nginx/private/

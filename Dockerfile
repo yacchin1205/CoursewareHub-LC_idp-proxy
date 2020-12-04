@@ -50,7 +50,7 @@ RUN chgrp nginx /var/lib/php/session \
 ARG SIMPLESAMLPHP_CONFIG="config.php"
 ARG SIMPLESAMLPHP_METAREFRESH_CONFIG="config-metarefresh.php"
 RUN set -x \
-    && mkdir -p /var/www/simplesamlphp/metadata/xml \
+    && mkdir -p /var/www/simplesamlphp/metadata/xml /etc/simplesamlphp/resources \
     && touch /var/www/simplesamlphp/modules/cron/enable \
     && touch /var/www/simplesamlphp/modules/statistics/disable \
     && touch /var/www/simplesamlphp/modules/metarefresh/enable \
@@ -66,7 +66,7 @@ COPY resources/simplesamlphp/bin/add_auth_proxy_metadata.php /var/www/simplesaml
 COPY resources/simplesamlphp/bin/remove_auth_proxy_metadata.php /var/www/simplesamlphp/bin
 COPY resources/simplesamlphp/bin/auth_proxy_functions.php /var/www/simplesamlphp/bin
 COPY resources/simplesamlphp/metadata/saml20-idp-hosted.php /var/www/simplesamlphp/metadata
-COPY resources/simplesamlphp/metadata/xml/auth-proxies.xml /var/www/simplesamlphp/metadata/xml
+COPY resources/simplesamlphp/metadata/xml/auth-proxies.xml /etc/simplesamlphp/resources
 COPY resources/simplesamlphp/templates/selectidp-dropdown.php /var/www/simplesamlphp/templates/selectidp-dropdown.php
 COPY resources/saml/www/sp/discoresp.php /var/www/simplesamlphp/modules/saml/www/sp/discoresp.php
 COPY resources/simplesamlphp/bin/add_auth_proxy.sh /usr/local/sbin/
