@@ -2,6 +2,15 @@
 
 set -xe
 
+# Copy templates
+if ! [ -f /var/www/simplesamlphp/metadata/xml/auth-proxies.xml ]; then
+  cp /etc/simplesamlphp/resources/auth-proxies.xml /var/www/simplesamlphp/metadata/xml/
+fi
+if ! [ -f /var/www/simplesamlphp/config/authsources.php ]; then
+  cp /etc/simplesamlphp/resources/authsources.php /var/www/simplesamlphp/config/
+fi
+
+# Modify configurations
 if ! [ -z "${AUTH_FQDN}" ]; then
   sed -i "s;'entityID' => .*;'entityID' => 'https://${AUTH_FQDN}/shibboleth-sp',;" \
       /var/www/simplesamlphp/config/authsources.php
@@ -19,18 +28,22 @@ if ! [ -z "${DS_FQDN}" ]; then
       /var/www/simplesamlphp/templates/selectidp-dropdown.php
 fi
 
-if ! [ -f /var/www/simplesamlphp/metadata/xml/auth-proxies.xml ]; then
-  cp /etc/simplesamlphp/resources/auth-proxies.xml /var/www/simplesamlphp/metadata/xml/
+if [ -f $CERT_DIR/idp-proxy.key ]; then
+  # Setup the keys for nginx
+  cp -p $CERT_DIR/idp-proxy.chained.cer /etc/pki/nginx/
+  cp -p $CERT_DIR/idp-proxy.key /etc/pki/nginx/private/
+
+  # Setup the keys for simplesamlphp
+  cp -p $CERT_DIR/idp-proxy.cer /var/www/simplesamlphp/cert/
+  cp -p $CERT_DIR/idp-proxy.key /var/www/simplesamlphp/cert/
 fi
-
-# Setup the keys for nginx
-cp -p $CERT_DIR/idp-proxy.chained.cer /etc/pki/nginx/
-cp -p $CERT_DIR/idp-proxy.key /etc/pki/nginx/private/
-
-# Setup the keys for simplesamlphp
-cp -p $CERT_DIR/idp-proxy.cer /var/www/simplesamlphp/cert/
-cp -p $CERT_DIR/idp-proxy.key /var/www/simplesamlphp/cert/
-cp -p $CERT_DIR/gakunin-signer.cer /var/www/simplesamlphp/cert/
+if [ -f $CERT_DIR/old-idp-proxy.key ]; then
+  cp -p $CERT_DIR/old-idp-proxy.cer /var/www/simplesamlphp/cert/
+  cp -p $CERT_DIR/old-idp-proxy.key /var/www/simplesamlphp/cert/
+fi
+if [ -f $CERT_DIR/gakunin-signer.cer ]; then
+  cp -p $CERT_DIR/gakunin-signer.cer /var/www/simplesamlphp/cert/
+fi
 
 # Set cron job to update metadata
 echo "@reboot /usr/bin/sleep 10 && /usr/bin/curl --silent --insecure \"https://localhost/simplesaml/module.php/cron/cron.php?key=$CRON_SECRET&tag=daily\" > /dev/null 2>&1" > /var/spool/cron/root

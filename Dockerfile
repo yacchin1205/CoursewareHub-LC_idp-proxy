@@ -55,12 +55,13 @@ RUN set -x \
     && touch /var/www/simplesamlphp/modules/statistics/disable \
     && touch /var/www/simplesamlphp/modules/metarefresh/enable \
     && cp /var/www/simplesamlphp/modules/cron/config-templates/*.php /var/www/simplesamlphp/config/ \
+    && rm /var/www/simplesamlphp/config/authsources.php \
     && mkdir -p /var/www/simplesamlphp/metadata/gakunin-metadata \
                 /var/www/simplesamlphp/metadata/attributeauthority-remote \
                 /var/www/simplesamlphp/metadata/open-idp-metadata \
     && chown -R nginx:nginx /var/www/simplesamlphp
 COPY resources/simplesamlphp/config/${SIMPLESAMLPHP_CONFIG} /var/www/simplesamlphp/config/config.php
-COPY resources/simplesamlphp/config/authsources.php /var/www/simplesamlphp/config
+COPY resources/simplesamlphp/config/authsources.php /etc/simplesamlphp/resources
 COPY resources/simplesamlphp/config/${SIMPLESAMLPHP_METAREFRESH_CONFIG} /var/www/simplesamlphp/config/config-metarefresh.php
 COPY resources/simplesamlphp/bin/add_auth_proxy_metadata.php /var/www/simplesamlphp/bin
 COPY resources/simplesamlphp/bin/remove_auth_proxy_metadata.php /var/www/simplesamlphp/bin
